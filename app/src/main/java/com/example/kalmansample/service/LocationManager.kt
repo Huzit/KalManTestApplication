@@ -8,17 +8,30 @@ import android.content.pm.PackageManager
 import android.os.Looper
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.example.kalmansample.repository.KalManDao
+import com.example.kalmansample.repository.KalManEntity
+import com.example.kalmansample.repository.RowEntity
 import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
-class LocationManager(private val mContext: Context) {
+class LocationManager (val mContext: Context, val kalManDao: KalManDao) {
+    
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
     private lateinit var locationCallback: LocationCallback
-
+    lateinit var latitudeKalMan: KalmanFilter
+    lateinit var longitudeKalMan: KalmanFilter
+    
     fun requestLocationPermission(){
         if(ActivityCompat.checkSelfPermission(mContext,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(mContext,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -30,17 +43,43 @@ class LocationManager(private val mContext: Context) {
 
     @SuppressLint("MissingPermission")
     fun requestLocationClient(locationInterval: Long){
-
-        val locationRequest = LocationRequest()
-        locationRequest.interval = locationInterval
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, locationInterval).build()
         locationCallback = object: LocationCallback(){
             override fun onLocationResult(l: LocationResult) {
-                Toast.makeText(mContext, "${l.lastLocation.latitude} ${l.lastLocation.longitude}", Toast.LENGTH_SHORT).show()
+                var latitude = l.lastLocation!!.latitude
+                var longitude = l.lastLocation!!.longitude
+                val altitude = l.lastLocation!!.altitude
+                
+                if(!::longitudeKalMan.isInitialized || !::latitudeKalMan.isInitialized){
+                    latitudeKalMan = KalmanFilter(latitude)
+                    longitudeKalMan = KalmanFilter(longitude)
+                } else{
+                    latitude = latitudeKalMan.update(latitude)
+                    longitude = longitudeKalMan.update(longitude)
+                }
+                
+                CoroutineScope(Dispatchers.IO).launch {
+                    kalManDao.insertKalmanGps(
+                        KalManEntity(
+                            workDate = LocalDate.now().toString(),
+                            latitude = latitude,
+                            longitude = longitude,
+                            altitude = altitude
+                        )
+                    )
+                    
+                    kalManDao.insertRowGps(
+                        RowEntity(
+                            workDate = LocalDate.now().toString(),
+                            latitude = l.lastLocation?.latitude!!,
+                            longitude = l.lastLocation?.longitude!!,
+                            altitude = altitude
+                        )
+                    )
+                }
             }
 
-            override fun onLocationAvailability(p0: LocationAvailability?) {
+            override fun onLocationAvailability(p0: LocationAvailability) {
                 super.onLocationAvailability(p0)
             }
         }

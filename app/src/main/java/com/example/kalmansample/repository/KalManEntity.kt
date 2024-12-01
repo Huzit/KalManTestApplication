@@ -7,27 +7,27 @@ import androidx.room.PrimaryKey
 @Entity
 data class KalManEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int = 0,
     @ColumnInfo(name = "workDate")
     val workDate: String,
     @ColumnInfo(name = "latitude")
-    val latitude: Float,
+    val latitude: Double,
     @ColumnInfo(name = "longitude")
-    val longitude: Float,
+    val longitude: Double,
     @ColumnInfo(name = "altitude")
-    val altitude: Float
+    val altitude: Double
 )
 
 @Entity
 data class RowEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int = 0,
     @ColumnInfo(name = "workDate")
     val workDate: String,
     @ColumnInfo(name = "latitude")
-    val latitude: Float,
+    val latitude: Double,
     @ColumnInfo(name = "longitude")
-    val longitude: Float,
+    val longitude: Double,
     @ColumnInfo(name = "altitude")
-    val altitude: Float
+    val altitude: Double
 )

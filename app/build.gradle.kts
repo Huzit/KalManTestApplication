@@ -74,6 +74,7 @@ dependencies {
     //location
     implementation(libs.android.gms)
     //room
-    implementation(libs.androidx.room)
-    ksp(libs.androidx.room)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 }
