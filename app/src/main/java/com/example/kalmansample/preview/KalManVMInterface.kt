@@ -10,4 +10,6 @@ interface KalManVMInterface {
     fun setAccelerometer(context: Context){
 
     }
+
+    fun getDatabase()
 }

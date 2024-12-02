@@ -38,4 +38,6 @@ class KalmanVM: ViewModel(), KalManVMInterface {
             sm.registerListener(sensorEventListener, acc, SensorManager.SENSOR_DELAY_NORMAL)
         }
     }
+
+
 }

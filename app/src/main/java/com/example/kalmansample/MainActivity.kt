@@ -9,6 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.kalmansample.repository.KalManDao
 import com.example.kalmansample.service.LocationManager
+import com.example.kalmansample.ui.Kalman
+import com.example.kalmansample.ui.nav.KalmanBottomNavigation
+import com.example.kalmansample.ui.theme.KalmanSampleTheme
 import com.example.kalmansample.vm.KalmanVM
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
@@ -22,7 +25,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         val kalmanVM = KalmanVM()
         setContent {
-        
+            KalmanSampleTheme {
+                KalmanBottomNavigation(kalmanVM)
+            }
         }
         val lm: LocationManager = LocationManager(this, kalManDao)
 
@@ -30,12 +35,4 @@ class MainActivity : ComponentActivity() {
 
         lm.requestLocationClient(5000L)
     }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
 }
