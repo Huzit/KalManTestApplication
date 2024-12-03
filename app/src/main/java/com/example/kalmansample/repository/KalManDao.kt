@@ -6,10 +6,10 @@ import androidx.room.Query
 
 @Dao
 interface KalManDao {
-    @Query("SELECT * FROM kalmanentity")
-    fun getKalmanGps(): List<KalManEntity>
-    @Query("SELECT * FROM rowentity")
-    fun getRowGps(): List<RowEntity>
+    @Query("SELECT * FROM kalmanentity WHERE workDate = :date")
+    fun getKalmanGps(vararg date: String): List<KalManEntity>
+    @Query("SELECT * FROM rowentity WHERE workDate = :date")
+    fun getRowGps(vararg date: String): List<RowEntity>
     @Insert
     fun insertKalmanGps(vararg kalManEntity: KalManEntity)
     @Insert

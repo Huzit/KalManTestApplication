@@ -7,14 +7,32 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.kalmansample.preview.KalManVMInterface
+import com.example.kalmansample.repository.KalManDao
+import com.example.kalmansample.repository.KalManEntity
+import com.example.kalmansample.repository.RowEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
-class KalmanVM: ViewModel(), KalManVMInterface {
+@HiltViewModel
+class KalmanVM @Inject constructor(private val kalManDao: KalManDao): ViewModel(), KalManVMInterface {
+//    @Inject lateinit var kalManDao: KalManDao
     override var x = mutableFloatStateOf(100f)
     override var y = mutableFloatStateOf(100f)
+
+    override var rowData = MutableStateFlow<List<RowEntity>>(arrayListOf(RowEntity(0, "", .0, .0, .0)))
+    override var kalManData = MutableStateFlow<List<KalManEntity>>(arrayListOf(KalManEntity(0, "", .0, .0, .0)))
 
     override fun setAccelerometer(context: Context) {
 
@@ -39,5 +57,15 @@ class KalmanVM: ViewModel(), KalManVMInterface {
         }
     }
 
+    override fun getRowDatabase(date: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            rowData.value = kalManDao.getRowGps(date)
+        }
+    }
 
+    override fun getkalManDatabase(date: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            kalManData.value = kalManDao.getKalmanGps(date)
+        }
+    }
 }

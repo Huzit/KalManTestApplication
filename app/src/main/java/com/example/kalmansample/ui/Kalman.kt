@@ -1,24 +1,21 @@
 package com.example.kalmansample.ui
 
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,6 +35,8 @@ import java.util.Date
 fun Kalman(vm: KalManVMInterface) {
     var isDatePickerShow by remember {  mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf("날짜를 선택해주세요") }
+    val rowDB = vm.rowData.collectAsState()
+    val kalmanDB = vm.kalManData.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -62,6 +61,8 @@ fun Kalman(vm: KalManVMInterface) {
             , onClick = {
                 if(selectedDate.isNotBlank()){
 
+                    vm.getRowDatabase(selectedDate)
+                    vm.getkalManDatabase(selectedDate)
                 }
             }
         ) {
@@ -74,10 +75,12 @@ fun Kalman(vm: KalManVMInterface) {
             onDismiss = {
                 isDatePickerShow = false
             })
+        Text("자료 조회 완료\n rowDBcount : ${rowDB.value?.size ?: 0} \n kalman : ${kalmanDB.value?.size ?: 0}")
     }
+
 }
 
-private fun convertTimeMillToDate(date: Long) = SimpleDateFormat("yyyy/MM/dd").format(Date(date))
+private fun convertTimeMillToDate(date: Long) = SimpleDateFormat("yyyy-MM-dd").format(Date(date))
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
