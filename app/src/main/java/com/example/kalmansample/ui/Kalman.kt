@@ -43,6 +43,12 @@ fun Kalman(vm: KalManVMInterface) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Button(onClick = {
+
+        }) { }
+        Button(onClick = {
+
+        }) { }
         Box(modifier = Modifier
             .padding(bottom = 20.dp)
             .size(200.dp, 48.dp)
