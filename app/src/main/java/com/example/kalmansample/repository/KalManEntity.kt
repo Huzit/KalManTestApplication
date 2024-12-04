@@ -1,5 +1,6 @@
 package com.example.kalmansample.repository
 
+import android.telephony.CarrierConfigManager.Gps
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -7,27 +8,35 @@ import androidx.room.PrimaryKey
 @Entity
 data class KalManEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    override val id: Int = 0,
     @ColumnInfo(name = "workDate")
-    val workDate: String,
+    override val workDate: String,
     @ColumnInfo(name = "latitude")
-    val latitude: Double,
+    override val latitude: Double,
     @ColumnInfo(name = "longitude")
-    val longitude: Double,
+    override val longitude: Double,
     @ColumnInfo(name = "altitude")
-    val altitude: Double
-)
+    override val altitude: Double
+): GPSEntity
 
 @Entity
 data class RowEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    override val id: Int = 0,
     @ColumnInfo(name = "workDate")
-    val workDate: String,
+    override val workDate: String,
     @ColumnInfo(name = "latitude")
-    val latitude: Double,
+    override val latitude: Double,
     @ColumnInfo(name = "longitude")
-    val longitude: Double,
+    override val longitude: Double,
     @ColumnInfo(name = "altitude")
+    override val altitude: Double
+): GPSEntity
+
+interface GPSEntity {
+    val id: Int
+    val workDate: String
+    val latitude: Double
+    val longitude: Double
     val altitude: Double
-)
+}

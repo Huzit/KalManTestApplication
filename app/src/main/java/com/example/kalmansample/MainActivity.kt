@@ -1,27 +1,22 @@
 package com.example.kalmansample
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.kalmansample.preview.KalManVMInterface
+import androidx.appcompat.app.AppCompatActivity
 import com.example.kalmansample.repository.KalManDao
+import com.example.kalmansample.service.ForegroundService
 import com.example.kalmansample.service.LocationManager
-import com.example.kalmansample.ui.Kalman
 import com.example.kalmansample.ui.nav.KalmanBottomNavigation
 import com.example.kalmansample.ui.theme.KalmanSampleTheme
 import com.example.kalmansample.vm.KalmanVM
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     @Inject lateinit var kalManDao: KalManDao
     private var kalManVm = viewModels<KalmanVM>()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +31,9 @@ class MainActivity : ComponentActivity() {
         val lm: LocationManager = LocationManager(this, kalManDao)
 
         lm.requestLocationPermission()
+        lm.requestLocationClient(30000L)
 
-        lm.requestLocationClient(5000L)
+        val intent = Intent(this, ForegroundService::class.java)
+        this.startForegroundService(intent)
     }
 }

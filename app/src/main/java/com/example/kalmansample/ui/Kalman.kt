@@ -1,5 +1,7 @@
 package com.example.kalmansample.ui
 
+import android.content.Intent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,10 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.kalmansample.preview.KalManVMInterface
 import com.example.kalmansample.preview.KalmanVMimpl
+import com.example.kalmansample.service.ForegroundService
 import com.example.kalmansample.ui.dialog.DatePickerModal
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -37,18 +41,25 @@ fun Kalman(vm: KalManVMInterface) {
     var selectedDate by remember { mutableStateOf("날짜를 선택해주세요") }
     val rowDB = vm.rowData.collectAsState()
     val kalmanDB = vm.kalManData.collectAsState()
+    val lc = LocalContext.current
+    val intent = remember { Intent(lc, ForegroundService::class.java) }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+            .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Button(onClick = {
-
-        }) { }
+            lc.startForegroundService(intent)
+        }) {
+            Text("포그라운드 서비스 시작")
+        }
         Button(onClick = {
-
-        }) { }
+            lc.stopService(intent)
+        }) {
+            Text("포그라운드 서비스 종료")
+        }
         Box(modifier = Modifier
             .padding(bottom = 20.dp)
             .size(200.dp, 48.dp)

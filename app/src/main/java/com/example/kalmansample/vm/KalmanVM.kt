@@ -16,6 +16,7 @@ import com.example.kalmansample.preview.KalManVMInterface
 import com.example.kalmansample.repository.KalManDao
 import com.example.kalmansample.repository.KalManEntity
 import com.example.kalmansample.repository.RowEntity
+import com.example.kalmansample.service.ForegroundService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +31,6 @@ class KalmanVM @Inject constructor(private val kalManDao: KalManDao): ViewModel(
 //    @Inject lateinit var kalManDao: KalManDao
     override var x = mutableFloatStateOf(100f)
     override var y = mutableFloatStateOf(100f)
-
     override var rowData = MutableStateFlow<List<RowEntity>>(arrayListOf(RowEntity(0, "", .0, .0, .0)))
     override var kalManData = MutableStateFlow<List<KalManEntity>>(arrayListOf(KalManEntity(0, "", .0, .0, .0)))
 

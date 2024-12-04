@@ -51,10 +51,10 @@ fun KalManNavHost(
             Kalman(vm)
         }
         composable(KalManDestination.KalManMap.name) {
-            KalManMap()
+            KalManMap(vm)
         }
         composable(KalManDestination.RowMap.name) {
-            RowMap()
+            RowMap(vm)
         }
     }
 }

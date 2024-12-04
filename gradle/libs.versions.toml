@@ -14,6 +14,7 @@ room ="2.6.1"
 kotlin = "1.9.0"
 ksp = "1.9.0-1.0.13"
 navigation = "2.8.4"
+lifecycleService = "2.8.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,6 +43,11 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room"}
 #nav
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation"}
+#legacy code import
+androidx-ui-legacy = { group = "androidx.compose.ui", name = "ui-viewbinding"}
+#naver-map
+naver-map = { group = "com.naver.maps", name = "map-sdk", version = "3.20.0"}
+androidx-lifecycle-service = { group = "androidx.lifecycle", name = "lifecycle-service", version.ref = "lifecycleService" }
 
 
 [plugins]
