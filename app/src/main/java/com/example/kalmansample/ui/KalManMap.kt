@@ -22,7 +22,7 @@ fun KalManMap(vm: KalManVMInterface){
 
 class MapReadyCallback(vm: KalManVMInterface, isKalMan: Boolean): OnMapReadyCallback{
     private val mapList: List<GPSEntity> = if(isKalMan) vm.kalManData.value else vm.rowData.value
-    private val pathList = arrayListOf<LatLng>(LatLng(35.174513, 129.128418), LatLng(35.174513, 129.128418))
+    private val pathList = arrayListOf(LatLng(35.174513, 129.128418), LatLng(35.174513, 129.128418))
     override fun onMapReady(naverMap: NaverMap) {
         val path = PathOverlay()
         naverMap.cameraPosition = CameraPosition(
@@ -31,10 +31,12 @@ class MapReadyCallback(vm: KalManVMInterface, isKalMan: Boolean): OnMapReadyCall
         )
 
         path.map = null
-        if(mapList.size > 2)
-            mapList.forEach{ kal ->
+        if(mapList.size > 2) {
+            pathList.clear()
+            mapList.forEach { kal ->
                 pathList.add(LatLng(kal.latitude, kal.longitude))
             }
+        }
         path.let {
             it.coords = pathList
             it.width = 30

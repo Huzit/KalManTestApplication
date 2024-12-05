@@ -1,7 +1,13 @@
 package com.example.kalmansample
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -13,6 +19,7 @@ import com.example.kalmansample.ui.nav.KalmanBottomNavigation
 import com.example.kalmansample.ui.theme.KalmanSampleTheme
 import com.example.kalmansample.vm.KalmanVM
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -28,12 +35,24 @@ class MainActivity : AppCompatActivity() {
                 KalmanBottomNavigation(kalManVm.value)
             }
         }
-        val lm: LocationManager = LocationManager(this, kalManDao)
 
-        lm.requestLocationPermission()
+        val lm: LocationManager = LocationManager(this, kalManDao)
+        runBlocking {
+            lm.requestLocationPermission()
+        }
+        lm.requestBackgroundPermission()
         lm.requestLocationClient(30000L)
 
+        //배터리 최적화 종료
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
+                val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                startActivity(intent)
+            }
+        }
+
         val intent = Intent(this, ForegroundService::class.java)
-        this.startForegroundService(intent)
+        startForegroundService(intent)
     }
 }

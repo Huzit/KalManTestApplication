@@ -1,6 +1,9 @@
 package com.example.kalmansample.ui
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,8 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,6 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import com.example.kalmansample.MainActivity
 import com.example.kalmansample.preview.KalManVMInterface
 import com.example.kalmansample.preview.KalmanVMimpl
 import com.example.kalmansample.service.ForegroundService
@@ -51,6 +54,9 @@ fun Kalman(vm: KalManVMInterface) {
         verticalArrangement = Arrangement.Center,
     ) {
         Button(onClick = {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                if(lc.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED)
+                    ActivityCompat.requestPermissions(lc as MainActivity, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
             lc.startForegroundService(intent)
         }) {
             Text("포그라운드 서비스 시작")

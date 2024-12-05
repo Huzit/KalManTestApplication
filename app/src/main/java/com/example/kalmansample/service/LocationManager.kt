@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Looper
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.example.kalmansample.MainActivity
 import com.example.kalmansample.repository.KalManDao
 import com.example.kalmansample.repository.KalManEntity
 import com.example.kalmansample.repository.RowEntity
@@ -39,6 +40,11 @@ class LocationManager (val mContext: Context, val kalManDao: KalManDao) {
             Toast.makeText(mContext, "위치권한이 없습니다", Toast.LENGTH_SHORT).show()
             ActivityCompat.requestPermissions(mContext as Activity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 1)
         }
+    }
+
+    fun requestBackgroundPermission(){
+        if(ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(mContext as MainActivity, arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 2)
     }
 
     @SuppressLint("MissingPermission")
