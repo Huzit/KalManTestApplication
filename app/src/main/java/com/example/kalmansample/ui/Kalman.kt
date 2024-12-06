@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,22 +31,27 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.startForegroundService
 import com.example.kalmansample.MainActivity
 import com.example.kalmansample.preview.KalManVMInterface
 import com.example.kalmansample.preview.KalmanVMimpl
 import com.example.kalmansample.service.ForegroundService
+import com.example.kalmansample.service.LocationManager
+import com.example.kalmansample.ui.dialog.BackgroundLocationDialog
 import com.example.kalmansample.ui.dialog.DatePickerModal
+import com.example.kalmansample.ui.dialog.IgnoreBatteryOptimization
 import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
-fun Kalman(vm: KalManVMInterface) {
+fun Kalman(vm: KalManVMInterface, lm: LocationManager) {
     var isDatePickerShow by remember {  mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf("날짜를 선택해주세요") }
     val rowDB = vm.rowData.collectAsState()
     val kalmanDB = vm.kalManData.collectAsState()
     val lc = LocalContext.current
     val intent = remember { Intent(lc, ForegroundService::class.java) }
+    val locationPermission by remember{ mutableStateOf(!lm.checkLocationPermissions())}
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -101,6 +107,15 @@ fun Kalman(vm: KalManVMInterface) {
         Text("자료 조회 완료\n rowDBcount : ${rowDB.value?.size ?: 0} \n kalman : ${kalmanDB.value?.size ?: 0}")
     }
 
+    IgnoreBatteryOptimization()
+    BackgroundLocationDialog(lm)
+
+    LaunchedEffect(locationPermission) {
+        if(locationPermission) {
+            lm.requestLocationClient(1000L)
+            startForegroundService(lc, Intent(lc, ForegroundService::class.java))
+        }
+    }
 }
 
 private fun convertTimeMillToDate(date: Long) = SimpleDateFormat("yyyy-MM-dd").format(Date(date))
@@ -109,5 +124,5 @@ private fun convertTimeMillToDate(date: Long) = SimpleDateFormat("yyyy-MM-dd").f
 @Composable
 fun KalmanPreview(){
     val a = KalmanVMimpl()
-    Kalman(a)
+//    Kalman(a)
 }

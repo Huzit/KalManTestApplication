@@ -30,29 +30,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 //        val kalmanVM = KalmanVM()
+        val lm= LocationManager(this, kalManDao)
         setContent {
             KalmanSampleTheme {
-                KalmanBottomNavigation(kalManVm.value)
+                KalmanBottomNavigation(kalManVm.value, lm)
             }
         }
-
-        val lm: LocationManager = LocationManager(this, kalManDao)
-        runBlocking {
-            lm.requestLocationPermission()
-        }
-        lm.requestBackgroundPermission()
-        lm.requestLocationClient(30000L)
-
-        //배터리 최적화 종료
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-            if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
-                val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                startActivity(intent)
-            }
-        }
-
-        val intent = Intent(this, ForegroundService::class.java)
-        startForegroundService(intent)
     }
 }

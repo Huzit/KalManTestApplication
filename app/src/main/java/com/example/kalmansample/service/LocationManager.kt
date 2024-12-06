@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.example.kalmansample.MainActivity
@@ -27,24 +28,34 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 
 class LocationManager (val mContext: Context, val kalManDao: KalManDao) {
-    
     private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
     private lateinit var locationCallback: LocationCallback
     lateinit var latitudeKalMan: KalmanFilter
     lateinit var longitudeKalMan: KalmanFilter
+
+    fun checkLocationPermissions() =
+        ActivityCompat.checkSelfPermission(mContext,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(mContext,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(mContext,Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
+
     
-    fun requestLocationPermission(){
+    fun requestLocationPermission(): Boolean{
         if(ActivityCompat.checkSelfPermission(mContext,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(mContext,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
             Toast.makeText(mContext, "위치권한이 없습니다", Toast.LENGTH_SHORT).show()
             ActivityCompat.requestPermissions(mContext as Activity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 1)
+            return false
         }
+        return true
     }
 
-    fun requestBackgroundPermission(){
-        if(ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED)
+    fun requestBackgroundPermission(): Boolean{
+        if(ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(mContext as MainActivity, arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), 2)
+            return false
+        }
+        return true
     }
 
     @SuppressLint("MissingPermission")
@@ -55,7 +66,7 @@ class LocationManager (val mContext: Context, val kalManDao: KalManDao) {
                 var latitude = l.lastLocation!!.latitude
                 var longitude = l.lastLocation!!.longitude
                 val altitude = l.lastLocation!!.altitude
-                
+                Log.d("dkdkdk", "위치수집중")
                 if(!::longitudeKalMan.isInitialized || !::latitudeKalMan.isInitialized){
                     latitudeKalMan = KalmanFilter(latitude)
                     longitudeKalMan = KalmanFilter(longitude)

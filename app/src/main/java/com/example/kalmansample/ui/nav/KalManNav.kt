@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.kalmansample.service.LocationManager
 import com.example.kalmansample.ui.KalManMap
 import com.example.kalmansample.ui.Kalman
 import com.example.kalmansample.ui.RowMap
@@ -16,7 +17,7 @@ import com.example.kalmansample.vm.KalmanVM
 
 
 @Composable
-fun KalmanBottomNavigation(vm: KalmanVM){
+fun KalmanBottomNavigation(vm: KalmanVM, lm: LocationManager){
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {
@@ -28,27 +29,28 @@ fun KalmanBottomNavigation(vm: KalmanVM){
                         selected = true,
                         onClick = {
                             navController.navigate(kalManDestination.name)
-                        }
+                        },
                     )
                 }
             }
         },
     ){ it
-        KalManNavHost(vm, navController)
+        KalManNavHost(vm, navController, lm)
     }
 }
 
 @Composable
 fun KalManNavHost(
     vm: KalmanVM,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    lm: LocationManager
 ){
     NavHost(
         navController = navController,
         startDestination = KalManDestination.Home.name
     ){
         composable(KalManDestination.Home.name) {
-            Kalman(vm)
+            Kalman(vm, lm)
         }
         composable(KalManDestination.KalManMap.name) {
             KalManMap(vm)
